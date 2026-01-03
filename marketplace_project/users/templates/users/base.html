@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+        /* @theme {
+            --color-clifford: #da373d;
+        } */
+        body {
+            background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
+        }
+    </style>
+    <title>
+        {% block head %}
+        {% endblock%}
+    </title>
+</head>
+<body>
+    {# Navigation #}
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-blue-600">
+                        EkoMarket
+                    </h1>
+                </div>
+                {% if request.user.is_authenticated %}
+                <div>
+                    <a href="{% url 'logout' %}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Se deconnecter</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>
