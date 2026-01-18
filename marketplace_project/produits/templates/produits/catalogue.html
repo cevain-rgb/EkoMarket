@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %} Produits - EkoMarket {% endblock %}
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Catalogue des Produits</h1>
+    
+    <div class="grid rid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- Filtres -->
+        <section id="filtre" class="">
+            <form method="GET" class="mb-6 bg-white p-5 rounded-lg shadow h-100">
+                <div class="grid grid-cols-1 gap-4">
+                    <h3 class="text-bold">Rechercher</h3>
+                    <input type="text" name="q" placeholder="Rechercher..." value="{{ filtres.recherche }}" class="border p-1 rounded">
+                    <hr>
+                    <h3>Filtrer</h3>
+                    <input type="number" name="prix_min" placeholder="Prix min" value="{{ filtres.prix_min }}" class="border p-1 rounded">
+                    <input type="number" name="prix_max" placeholder="Prix max" value="{{ filtres.prix_max }}" class="border p-1 rounded">
+                    <select name="tri" class="border p-2 rounded">
+                        <option value="nom" {% if filtres.tri == 'nom' %}selected{% endif %}>Nom</option>
+                        <option value="prix_asc" {% if filtres.tri == 'prix_asc' %}selected{% endif %}>Prix croissant</option>
+                        <option value="prix_desc" {% if filtres.tri == 'prix_desc' %}selected{% endif %}>Prix décroissant</option>
+                        <option value="nouveau" {% if filtres.tri == 'nouveau' %}selected{% endif %}>Nouveaux</option>
+                    </select>
+                </div>
+                <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-1 rounded">Filtrer</button>
+            </form>
+        </section>
+    
+        <!-- Produits -->
+        <section class="py-12 bg-gray-100 md:rounded-lg lg:col-span-3">
+            <div class="container mx-auto px-4">
+                <!-- <h3 class="text-2xl font-bold mb-6">Produits tendances</h3> -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {% if produits %}
+                    {% for produit in produits %}
+                    <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                        <div class="h-48 bg-gray-200 flex items-center justify-center">
+                        {% if produit.image_principale %}
+                        <img src="{{ produit.image_principale.url }}" alt="{{ produit.nom }}" class="w-full h-48 object-cover mb-4">
+                        {% else %}
+                        <i class="fas fa-image text-4xl text-gray-400"></i>
+                        {% endif %}
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-bold mb-1">{{ produit.titre }}</h4>
+                            <div class="text-blue-600 font-bold">{{ produit.prix }} FCFA</div>
+                            <div class="flex items-center text-sm text-gray-500 mt-2">
+                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                <span>{{ produit.boutique.ville }} - {{ produit.boutique.adresse }}</span>
+                            </div>
+                            {% if not produit.id in panier %}
+                            <button onclick="ajouterAuPanier('{{ produit.id }}')" class="bg-gray-50 hover:bg-gray-200 rounded-full px-2 py-1 rounded mt-2 cursor-pointer"><i class="fas fa-cart-plus text-[var(--color-primary)] "></i></button>
+                            {% endif %}
+                            <!-- {{ produit.id }} -->
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                Aucun produit
+                {% endif %}
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<script>
+function ajouterAuPanier(produitId) {
+    fetch('/produits/ajouter-au-panier/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: 'produit_id=' + produitId + '&quantite=1'
+    })
+    .then(response => response.json())
+    .then(data => alert(data.message));
+}
+</script>
+{% endblock %}

@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ boutique.nom }} - EkoMarket{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen">
+    
+    <!-- Bannière de la boutique -->
+    <div class="relative h-64 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)]">
+        {% if boutique.banniere %}
+        <img src="{{ boutique.banniere.url }}" alt="{{ boutique.nom }}" class="w-full h-full object-cover">
+        {% else %}
+        <div class="absolute inset-0 flex items-center justify-center">
+            <i class="fas fa-store text-white text-6xl opacity-20"></i>
+        </div>
+        {% endif %}
+        
+        <!-- Overlay gradient -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+    </div>
+    
+    <!-- Informations de la boutique -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 relative z-10">
+        <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+            <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
+                
+                <!-- Logo -->
+                <div class="w-32 h-32 bg-white border-4 border-white rounded-2xl shadow-lg flex-shrink-0">
+                    {% if boutique.logo %}
+                    <img src="{{ boutique.logo.url }}" alt="{{ boutique.nom }}" class="w-full h-full object-cover rounded-xl">
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] rounded-xl">
+                        <span class="text-white text-4xl font-bold">{{ boutique.nom.0 }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Infos -->
+                <div class="flex-1">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900">{{ boutique.nom }}</h1>
+                            <p class="text-gray-600 mt-1">{{ boutique.secteur_activite }}</p>
+                            
+                            <!-- Note et avis -->
+                            <div class="flex items-center mt-3 space-x-4">
+                                <div class="flex items-center">
+                                    {% for i in "12345" %}
+                                    <i class="fas fa-star {% if i|add:'0' <= boutique.note_moyenne %}text-yellow-400{% else %}text-gray-300{% endif %}"></i>
+                                    {% endfor %}
+                                    <span class="ml-2 text-gray-700 font-semibold">{{ boutique.note_moyenne|floatformat:1 }}</span>
+                                    <span class="ml-1 text-gray-500">({{ boutique.nombre_avis }} avis)</span>
+                                </div>
+                                
+                                <span class="text-gray-400">•</span>
+                                
+                                <div class="flex items-center text-gray-600">
+                                    <i class="fas fa-users mr-2 text-[var(--color-primary)]"></i>
+                                    <span>{{ boutique.followers.count }} followers</span>
+                                </div>
+                                
+                                <span class="text-gray-400">•</span>
+                                
+                                <div class="flex items-center text-gray-600">
+                                    <i class="fas fa-shopping-bag mr-2 text-[var(--color-primary)]"></i>
+                                    <span>{{ boutique.nombre_ventes }} ventes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Boutons d'action -->
+                        <div class="flex items-center space-x-3">
+                            <button class="px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-secondary)] transition font-semibold">
+                                <i class="fas fa-heart mr-2"></i>Suivre
+                            </button>
+                            
+                            <button class="px-6 py-3 border-2 border-[var(--color-primary)] text-[var(--color-primary)] rounded-lg hover:bg-blue-50 transition font-semibold">
+                                <i class="fas fa-share-alt mr-2"></i>Partager
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Badges -->
+                    <div class="flex items-center gap-2 mt-4">
+                        {% if boutique.est_premium %}
+                        <span class="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold rounded-full">
+                            <i class="fas fa-crown mr-1"></i>PREMIUM
+                        </span>
+                        {% endif %}
+                        
+                        <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
+                            <i class="fas fa-check-circle mr-1"></i>Boutique vérifiée
+                        </span>
+                        
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
+                            <i class="fas fa-shipping-fast mr-1"></i>Livraison rapide
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Onglets et contenu -->
+        <div class="mt-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <!-- Colonne principale (3/4) -->
+            <div class="lg:col-span-3">
+                
+                <!-- Tabs -->
+                <div class="bg-white rounded-xl shadow-md mb-6">
+                    <div class="border-b border-gray-200">
+                        <nav class="flex space-x-8 px-6" aria-label="Tabs">
+                            <button class="tab-btn active py-4 px-1 border-b-2 border-[var(--color-primary)] font-medium text-[var(--color-primary)]" data-tab="produits">
+                                <i class="fas fa-box mr-2"></i>Produits
+                            </button>
+                            <button class="tab-btn py-4 px-1 border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="apropos">
+                                <i class="fas fa-info-circle mr-2"></i>À propos
+                            </button>
+                            <button class="tab-btn py-4 px-1 border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="avis">
+                                <i class="fas fa-star mr-2"></i>Avis ({{ boutique.nombre_avis }})
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+                
+                <!-- Tab Produits -->
+                <div id="produits" class="tab-content">
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-bold text-gray-900">
+                                Produits de la boutique
+                            </h2>
+                            <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]">
+                                <option>Plus récents</option>
+                                <option>Prix croissant</option>
+                                <option>Prix décroissant</option>
+                                <option>Popularité</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Grille de produits -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Empty State -->
+                            <div class="col-span-3 text-center py-12">
+                                <i class="fas fa-box-open text-gray-300 text-6xl mb-4"></i>
+                                <p class="text-gray-600 mb-2">Aucun produit pour le moment</p>
+                                <p class="text-gray-500 text-sm">Cette boutique n'a pas encore ajouté de produits</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab À propos -->
+                <div id="apropos" class="tab-content hidden">
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4">À propos de {{ boutique.nom }}</h2>
+                        <div class="prose max-w-none">
+                            <p class="text-gray-700 leading-relaxed whitespace-pre-line">{{ boutique.description }}</p>
+                        </div>
+                        
+                        {% if boutique.images.exists %}
+                        <div class="mt-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Galerie</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                {% for image in boutique.images.all %}
+                                <div class="aspect-square rounded-lg overflow-hidden">
+                                    <img src="{{ image.image.url }}" alt="{{ image.legende }}" class="w-full h-full object-cover hover:scale-110 transition">
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Tab Avis -->
+                <div id="avis" class="tab-content hidden">
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-bold text-gray-900">Avis clients</h2>
+                            <button class="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-secondary)] transition">
+                                <i class="fas fa-plus mr-2"></i>Laisser un avis
+                            </button>
+                        </div>
+                        
+                        <!-- Résumé des notes -->
+                        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="text-center">
+                                    <div class="text-5xl font-bold text-[var(--color-primary)] mb-2">{{ boutique.note_moyenne|floatformat:1 }}</div>
+                                    <div class="flex justify-center mb-2">
+                                        {% for i in "12345" %}
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        {% endfor %}
+                                    </div>
+                                    <p class="text-gray-600 text-sm">{{ boutique.nombre_avis }} avis</p>
+                                </div>
+                                
+                                <div class="md:col-span-2">
+                                    {% for i in "54321" %}
+                                    <div class="flex items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-700 w-12">{{ i }} <i class="fas fa-star text-yellow-400 text-xs"></i></span>
+                                        <div class="flex-1 mx-3">
+                                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                                <div class="h-full bg-[var(--color-primary)]" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                        <span class="text-sm text-gray-600 w-12 text-right">0</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Liste des avis -->
+                        <div class="space-y-6">
+                            <!-- Empty State -->
+                            <div class="text-center py-12">
+                                <i class="fas fa-comments text-gray-300 text-6xl mb-4"></i>
+                                <p class="text-gray-600">Aucun avis pour le moment</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar (1/4) -->
+            <div class="space-y-6">
+                
+                <!-- Contact -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">
+                        <i class="fas fa-envelope text-[var(--color-primary)] mr-2"></i>Contact
+                    </h3>
+                    
+                    <button class="w-full px-4 py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-secondary)] transition font-semibold mb-3">
+                        <i class="fas fa-comment-dots mr-2"></i>Envoyer un message
+                    </button>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center text-gray-600">
+                            <i class="fas fa-phone text-[var(--color-primary)] w-6"></i>
+                            <span>{{ boutique.telephone }}</span>
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <i class="fas fa-envelope text-[var(--color-primary)] w-6"></i>
+                            <a href="mailto:{{ boutique.email }}" class="hover:text-[var(--color-primary)]">{{ boutique.email }}</a>
+                        </div>
+                        <div class="flex items-start text-gray-600">
+                            <i class="fas fa-map-marker-alt text-[var(--color-primary)] w-6 mt-1"></i>
+                            <span>{{ boutique.adresse }}, {{ boutique.ville }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if boutique.site_web or boutique.facebook or boutique.instagram %}
+                    <hr class="my-4">
+                    <div class="flex justify-center space-x-4">
+                        {% if boutique.site_web %}
+                        <a href="{{ boutique.site_web }}" target="_blank" class="text-gray-400 hover:text-[var(--color-primary)] transition">
+                            <i class="fas fa-globe text-2xl"></i>
+                        </a>
+                        {% endif %}
+                        {% if boutique.facebook %}
+                        <a href="{{ boutique.facebook }}" target="_blank" class="text-gray-400 hover:text-blue-600 transition">
+                            <i class="fab fa-facebook text-2xl"></i>
+                        </a>
+                        {% endif %}
+                        {% if boutique.instagram %}
+                        <a href="{{ boutique.instagram }}" target="_blank" class="text-gray-400 hover:text-pink-600 transition">
+                            <i class="fab fa-instagram text-2xl"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Catégories -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">
+                        <i class="fas fa-tags text-[var(--color-primary)] mr-2"></i>Catégories
+                    </h3>
+                    
+                    <div class="space-y-2">
+                        {% for categorie in boutique.categories.all %}
+                        <div class="flex items-center justify-between p-2 hover:bg-blue-50 rounded transition">
+                            <span class="text-gray-700">{{ categorie.nom }}</span>
+                            <i class="fas {{ categorie.icone }} text-[var(--color-primary)]"></i>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Informations -->
+                <div class="bg-blue-50 rounded-xl p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">
+                        <i class="fas fa-info-circle text-[var(--color-primary)] mr-2"></i>Informations
+                    </h3>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Membre depuis</span>
+                            <span class="font-semibold">{{ boutique.created_at|date:"M Y" }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Temps de réponse</span>
+                            <span class="font-semibold text-green-600">< 2h</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Taux de réponse</span>
+                            <span class="font-semibold text-green-600">98%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tab switching
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabName = button.getAttribute('data-tab');
+            
+            tabButtons.forEach(btn => {
+                btn.classList.remove('active', 'border-[var(--color-primary)]', 'text-[var(--color-primary)]');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            tabContents.forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            button.classList.add('active', 'border-[var(--color-primary)]', 'text-[var(--color-primary)]');
+            button.classList.remove('border-transparent', 'text-gray-500');
+            document.getElementById(tabName).classList.remove('hidden');
+        });
+    });
+</script>
+{% endblock %}

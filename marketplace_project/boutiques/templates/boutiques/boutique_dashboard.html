@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashbord - EkoMarket{% endblock %}
+
+{% block content %}
+    <div class="py-8">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+            <h2 class="text-2xl font-bold">Tableau de bord</h2>
+            <a  href="#" class="mt-4 md:mt-0 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                <i class="fas fa-plus"></i> Nouveau produit
+            </a>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-gray-500 mb-2">PRICE</h3>
+                <div class="text-2xl font-bold">1,245</div>
+                <div class="text-blue-500 text-sm mt-1">+12%</div>
+            </div> -->
+            {% for cle,stat in stats.items %}
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-gray-500 mb-2">{{ cle.capitalize }}</h3>
+                <!-- <div class="text-2xl font-bold">0.00</div> -->
+                {% for key, val in stat.items %}
+                <div >
+                    <span class="text-gray-500 text-sm ">{{ key }} :</span>
+                    <span class="text-blue-500 text-sm ">{{ val }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-xl font-bold mb-4">Derniers messages</h3>
+                <!-- Liste des messages -->
+            </div>
+            
+            <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-xl font-bold mb-4">Performance</h3>
+                <!-- Graphique de performance -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

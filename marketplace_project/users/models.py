@@ -15,7 +15,7 @@ class Utilisateur(AbstractUser):
         ('ADMIN', 'Administrateur'),
     ]
     # identifiant
-    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)   
     username = models.CharField(max_length=255,default=None, unique=True, verbose_name="Username")
     # username = None
     email = models.EmailField(unique=True, verbose_name="Email")
@@ -97,17 +97,17 @@ class Utilisateur(AbstractUser):
     def get_type_utilisateur(self, value):
         self.is_active = value
     """
-    Profil étendu du vendeur
+    Profil étendu de l'utilisateur
     Informations supplémentaires pour personnaliser l'expérience
     """
     
     # Photo de profil
-    # avatar = models.ImageField(
-    #     upload_to='avatars/', 
-    #     blank=True, 
-    #     null=True,
-    #     verbose_name="Photo de profil"
-    # )
+    avatar = models.ImageField(
+        upload_to='avatars/', 
+        blank=True, 
+        null=True,
+        verbose_name="Photo de profil"
+    )
     
     # Préférences
     bio = models.TextField(blank=True, max_length=500, verbose_name="Biographie")

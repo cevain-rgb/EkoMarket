@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Applications locals
-    'users', # comprendre cette ligne
+    'users',
+    'boutiques',
+    'produits',
 ]
 # Modeles utilisateur persinalise
 AUTH_USER_MODEL = 'users.Utilisateur'
@@ -146,6 +148,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # SESSION_COOKIE_SECURE = True 
 # SESSION_COOKIE_HTTPONLY = True
 
-# Gestion des medias (avatar, ...)
+# Gestion des medias (avatar, logo, ...)
 MEDIA = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Configuration pour ecouter toute les interfaces reseaux
+ALLOWED_HOSTS = ['*']

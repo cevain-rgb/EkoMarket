@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+
+{% block title %}Toutes les boutiques - EkoMarket{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen">
+    
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl font-bold text-white mb-4">
+                Découvrez nos boutiques
+            </h1>
+            <p class="text-xl text-blue-100 mb-8">
+                Plus de {{ page_obj.paginator.count }} boutiques vérifiées au Cameroun
+            </p>
+            
+            <!-- Barre de recherche -->
+            <form method="GET" class="max-w-3xl mx-auto">
+                <div class="flex gap-2">
+                    <div class="flex-1 relative">
+                        <input 
+                            type="text" 
+                            name="search" 
+                            value="{{ search_query|default:'' }}"
+                            placeholder="Rechercher une boutique, un produit..." 
+                            class="w-full px-6 py-4 rounded-lg border-2 border-white/20 bg-white/10 backdrop-blur text-white placeholder-blue-200 focus:outline-none focus:border-white"
+                        >
+                        <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-blue-200"></i>
+                    </div>
+                    <button type="submit" class="px-8 py-4 bg-white text-[var(--color-primary)] rounded-lg hover:bg-blue-50 transition font-semibold">
+                        Rechercher
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            
+            <!-- Sidebar Filtres (1/4) -->
+            <aside class="lg:w-1/4">
+                <div class="bg-white rounded-xl shadow-md p-6 sticky top-8">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">
+                        <i class="fas fa-filter text-[var(--color-primary)] mr-2"></i>Filtres
+                    </h2>
+                    
+                    <form method="GET" id="filterForm">
+                        <!-- Conserver la recherche -->
+                        {% if search_query %}
+                        <input type="hidden" name="search" value="{{ search_query }}">
+                        {% endif %}
+                        
+                        <!-- Catégories -->
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-900 mb-3">Catégories</h3>
+                            <div class="space-y-2 max-h-64 overflow-y-auto">
+                                <label class="flex items-center p-2 hover:bg-blue-50 rounded cursor-pointer {% if not categorie_active %}bg-blue-50{% endif %}">
+                                    <input type="radio" name="categorie" value="" {% if not categorie_active %}checked{% endif %} class="form-radio text-[var(--color-primary)]">
+                                    <span class="ml-2 text-gray-700">Toutes les catégories</span>
+                                </label>
+                                {% for categorie in categories %}
+                                <label class="flex items-center justify-between p-2 hover:bg-blue-50 rounded cursor-pointer {% if categorie_active == categorie.slug %}bg-blue-50{% endif %}">
+                                    <div class="flex items-center">
+                                        <input type="radio" name="categorie" value="{{ categorie.slug }}" {% if categorie_active == categorie.slug %}checked{% endif %} class="form-radio text-[var(--color-primary)]">
+                                        <span class="ml-2 text-gray-700">{{ categorie.nom }}</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">({{ categorie.nb_boutiques }})</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <hr class="my-6">
+                        
+                        <!-- Ville -->
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-900 mb-3">Ville</h3>
+                            <select name="ville" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]">
+                                <option value="">Toutes les villes</option>
+                                <option value="Yaoundé" {% if ville_active == "Yaoundé" %}selected{% endif %}>Yaoundé</option>
+                                <option value="Douala" {% if ville_active == "Douala" %}selected{% endif %}>Douala</option>
+                                <option value="Bafoussam" {% if ville_active == "Bafoussam" %}selected{% endif %}>Bafoussam</option>
+                                <option value="Garoua" {% if ville_active == "Garoua" %}selected{% endif %}>Garoua</option>
+                                <option value="Bamenda" {% if ville_active == "Bamenda" %}selected{% endif %}>Bamenda</option>
+                            </select>
+                        </div>
+                        
+                        <hr class="my-6">
+                        
+                        <!-- Tri -->
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-900 mb-3">Trier par</h3>
+                            <select name="sort" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]">
+                                <option value="note">Mieux notées</option>
+                                <option value="recent">Plus récentes</option>
+                                <option value="followers">Plus suivies</option>
+                                <option value="ventes">Plus de ventes</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Boutons -->
+                        <div class="space-y-2">
+                            <button type="submit" class="w-full px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-secondary)] transition font-semibold">
+                                <i class="fas fa-check mr-2"></i>Appliquer
+                            </button>
+                            <a href="{% url 'boutiques_list' %}" class="block w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-semibold text-center">
+                                <i class="fas fa-times mr-2"></i>Réinitialiser
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </aside>
+            
+            <!-- Liste des boutiques (3/4) -->
+            <main class="lg:w-3/4">
+                
+                <!-- Résultats header -->
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">
+
+                        </h2>
+                        <p class="text-gray-600 mt-1">{{ page_obj.paginator.count }} boutique{{ page_obj.paginator.count|pluralize }} trouvée{{ page_obj.paginator.count|pluralize }}</p>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <button class="p-2 border-2 border-[var(--color-primary)] text-[var(--color-primary)] rounded-lg">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="p-2 border-2 border-gray-300 text-gray-600 rounded-lg hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Grille de boutiques -->
+                {% if page_obj %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    {% for boutique in page_obj %}
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition group">
+                        <!-- Bannière -->
+                        <div class="relative h-40 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)]">
+                            {% if boutique.banniere %}
+                            <img src="{{ boutique.banniere.url }}" alt="{{ boutique.nom }}" class="w-full h-full object-cover">
+                            {% endif %}
+                            
+                            <!-- Badges -->
+                            <div class="absolute top-3 right-3 space-y-2">
+                                {% if boutique.est_premium %}
+                                <span class="block px-2 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold rounded-full">
+                                    <i class="fas fa-crown"></i> PREMIUM
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Logo -->
+                        <div class="relative px-6 -mt-12">
+                            <div class="w-20 h-20 bg-white border-4 border-white rounded-xl shadow-lg overflow-hidden">
+                                {% if boutique.logo %}
+                                <img src="{{ boutique.logo.url }}" alt="{{ boutique.nom }}" class="w-full h-full object-cover">
+                                {% else %}
+                                <div class="w-full h-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center text-white text-2xl font-bold">
+                                    {{ boutique.nom.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Contenu -->
+                        <div class="p-6 pt-4">
+                            <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-[var(--color-primary)] transition">
+                                <a href="{% url 'boutique_detail' boutique.slug %}">{{ boutique.nom }}</a>
+                            </h3>
+                            
+                            <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                {{ boutique.description|truncatewords:15 }}
+                            </p>
+                            
+                            <!-- Stats -->
+                            <div class="flex items-center justify-between text-sm text-gray-600 mb-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                    <span class="font-semibold">{{ boutique.note_moyenne|floatformat:1 }}</span>
+                                    <span class="ml-1">({{ boutique.nombre_avis }})</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-map-marker-alt text-[var(--color-primary)] mr-1"></i>
+                                    <span>{{ boutique.ville }}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Catégories -->
+                            <div class="flex flex-wrap gap-1 mb-4">
+                                {% for categorie in boutique.categories.all|slice:":3" %}
+                                <span class="px-2 py-1 bg-blue-100 text-[var(--color-primary)] text-xs rounded-full">
+                                    {{ categorie.nom }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Bouton -->
+                            <a href="{% url 'boutique_detail' boutique.slug %}" class="block w-full px-4 py-2 bg-[var(--color-primary)] text-white text-center rounded-lg hover:bg-[var(--color-secondary)] transition font-semibold">
+                                <i class="fas fa-store mr-2"></i>Voir la boutique
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                <div class="flex items-center justify-center space-x-2">
+                    {% if page_obj.has_previous %}
+                    <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if categorie_active %}&categorie={{ categorie_active }}{% endif %}{% if ville_active %}&ville={{ ville_active }}{% endif %}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if categorie_active %}&categorie={{ categorie_active }}{% endif %}{% if ville_active %}&ville={{ ville_active }}{% endif %}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                    {% endif %}
+                    
+                    <span class="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg font-semibold">
+                        Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                    </span>
+                    
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if categorie_active %}&categorie={{ categorie_active }}{% endif %}{% if ville_active %}&ville={{ ville_active }}{% endif %}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if categorie_active %}&categorie={{ categorie_active }}{% endif %}{% if ville_active %}&ville={{ ville_active }}{% endif %}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                {% else %}
+                <!-- Empty State -->
+                <div class="text-center py-16 bg-white rounded-xl shadow-md">
+                    <i class="fas fa-store-slash text-gray-300 text-6xl mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Aucune boutique trouvée</h3>
+                    <p class="text-gray-600 mb-6">Essayez de modifier vos filtres de recherche</p>
+                    <a href="{% url 'boutiques_list' %}" class="inline-block px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-secondary)] transition">
+                        <i class="fas fa-redo mr-2"></i>Réinitialiser les filtres
+                    </a>
+                </div>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto-submit form on filter change
+    document.querySelectorAll('#filterForm input[type="radio"], #filterForm select').forEach(element => {
+        element.addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+    });
+</script>
+{% endblock %}

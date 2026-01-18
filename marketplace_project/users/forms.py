@@ -118,6 +118,210 @@ class UserLoginForm(AuthenticationForm):
             'class' : 'h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'
         })
     )
+    
+    
+    
+class UserProfileUpdateForm(forms.ModelForm):
+    """
+    Formulaire de mise à jour du profil utilisateur
+    """
+    first_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Prénom'
+        }),
+        label="Prénom"
+    )
+    
+    last_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Nom'
+        }),
+        label="Nom"
+    )
+    
+    telephone = forms.CharField(
+        max_length=15,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '+237XXXXXXXXX'
+        }),
+        label="Téléphone"
+    )
+    
+    adresse = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 3
+        }),
+        label="Adresse"
+    )
+    
+    ville = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control'
+        }),
+        label="Ville"
+    )
+    
+    class Meta:
+        model = Utilisateur
+        fields = ['first_name', 'last_name', 'telephone', 'adresse', 'ville']
+    
+    def clean_telephone(self):
+        """Valide le format du téléphone"""
+        phone = self.cleaned_data.get('telephone')
+        phone = re.sub(r'[^\d+]', '', phone)
+        
+        if not re.match(r'^\+?237?[0-9]{9}$', phone):
+            raise ValidationError("Format de téléphone invalide.")
+        
+        if not phone.startswith('+'):
+            if phone.startswith('237'):
+                phone = '+' + phone
+            else:
+                phone = '+237' + phone
+        
+        return phone
+    
+class UserProfileUpdateForm(forms.ModelForm):
+    """
+    Formulaire de mise à jour du profil utilisateur
+    """
+    first_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Prénom'
+        }),
+        label="Prénom"
+    )
+    
+    last_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Nom'
+        }),
+        label="Nom"
+    )
+    
+    telephone = forms.CharField(
+        max_length=15,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '+237XXXXXXXXX'
+        }),
+        label="Téléphone"
+    )
+    
+    adresse = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 3
+        }),
+        label="Adresse"
+    )
+    
+    ville = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control'
+        }),
+        label="Ville"
+    )
+    
+    class Meta:
+        model = Utilisateur
+        fields = ['first_name', 'last_name', 'telephone', 'adresse', 'ville']
+    
+    def clean_telephone(self):
+        """Valide le format du téléphone"""
+        phone = self.cleaned_data.get('telephone')
+        phone = re.sub(r'[^\d+]', '', phone)
+        
+        if not re.match(r'^\+?237?[0-9]{9}$', phone):
+            raise ValidationError("Format de téléphone invalide.")
+        
+        if not phone.startswith('+'):
+            if phone.startswith('237'):
+                phone = '+' + phone
+            else:
+                phone = '+237' + phone
+        
+        return phone
+
+
+class UserProfileExtendedForm(forms.ModelForm):
+    """
+    Formulaire pour les informations étendues du profil
+    (bio, préférences, etc.)
+    """
+    class Meta:
+        model = Utilisateur
+        fields = ['avatar', 'bio', 'preferred_language', 
+                'email_notifications', 'sms_notifications']
+        widgets = {
+            'avatar': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            }),
+            'bio': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Parlez-nous un peu de vous...',
+                'maxlength': '500'
+            }),
+            'preferred_language': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+            'email_notifications': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'sms_notifications': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            })
+        }
+        labels = {
+            'avatar': 'Photo de profil',
+            'bio': 'Biographie',
+            'preferred_language': 'Langue préférée',
+            'email_notifications': 'Recevoir les notifications par email',
+            'sms_notifications': 'Recevoir les notifications par SMS'
+        }
+    
+    def clean_avatar(self):
+        """Valide la taille et le type de l'image"""
+        avatar = self.cleaned_data.get('avatar')
+        
+        if avatar:
+            # Vérifier la taille (max 2MB)
+            if avatar.size > 2 * 1024 * 1024:
+                raise ValidationError("L'image ne doit pas dépasser 2 MB.")
+            
+            # Vérifier le type de fichier
+            valid_types = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
+            if avatar.content_type not in valid_types:
+                raise ValidationError(
+                    "Format d'image non supporté. Utilisez JPEG, PNG ou WebP."
+                )
+        
+        return avatar
+
 
 """
 Prénom * 

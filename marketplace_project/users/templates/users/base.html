@@ -3,21 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style type="text/tailwindcss">
-        /* @theme {
-            --color-clifford: #da373d;
-        } */
-        body {
-            background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
+    
+    <!-- Configuration Tailwind avec thème BLEU -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',      // Bleu principal
+                        secondary: '#1D4ED8',    // Bleu secondaire
+                        accent: '#3B82F6',       // Bleu accent
+                        dark: '#1E293B',         // Gris-bleu foncé
+                        light: '#EFF6FF',        // Bleu très clair
+                    }
+                }
+            }
         }
-    </style>
+    </script>
+    {% block extra_css %}{% endblock %}
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>
-        {% block head %}
-        {% endblock%}
+        {% block title %}Utilisateur - EkoMarket{% endblock%}
     </title>
 </head>
-<body>
+<body class="bg-gray-50 min-h-screen flex flex-col">
     {# Navigation #}
     <nav class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

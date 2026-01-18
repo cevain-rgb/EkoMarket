@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ma Boutique - EkoMarket{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Configuration Tailwind avec thème BLEU -->
+    <script>
+        // tailwind.config = {
+        //     theme: {
+        //         extend: {
+        //             colors: {
+        //                 primary: '#2563EB',      // Bleu principal
+        //                 secondary: '#1D4ED8',    // Bleu secondaire
+        //                 accent: '#3B82F6',       // Bleu accent
+        //                 dark: '#1E293B',         // Gris-bleu foncé
+        //                 light: '#EFF6FF',        // Bleu très clair
+        //             }
+        //         }
+        //     }
+        // }
+    </script>
+    <style>
+        :root {
+            --color-primary: #2563EB;
+            --color-secondary: #1D4ED8;
+            --color-accent: #3B82F6;
+            --color-dark: #1E293B;
+            --color-light: #EFF6FF;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    
+    <!-- Navigation Vendeur -->
+    <nav class="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                
+                <!-- Logo & Menu -->
+                <div class="flex items-center space-x-8">
+                    <a href="/" class="flex items-center space-x-2">
+                        <i class="fas fa-store text-white text-2xl"></i>
+                        <span class="text-2xl font-bold text-[var(--color-light)]">EkoMarket</span>
+                        <span class="text-xs bg-white text-[var(--color-primary)] px-2 py-1 rounded-full font-semibold">VENDEUR</span>
+                    </a>
+                    
+                    <!-- Navigation Links -->
+                    <!-- <div class="hidden md:flex items-center space-x-6">
+                        <a href="{# url 'boutique_dashboard' #}" class="text-white hover:text-light transition">
+                            <i class="fas fa-tachometer-alt mr-1"></i>Tableau de bord
+                        </a>
+                        <a href="{# url 'boutique_detail' user.boutique.slug #}" class="text-white hover:text-light transition">
+                            <i class="fas fa-store mr-1"></i>Ma boutique
+                        </a>
+                        <a href="#" class="text-white hover:text-light transition">
+                            <i class="fas fa-box mr-1"></i>Produits
+                        </a>
+                        <a href="#" class="text-white hover:text-light transition">
+                            <i class="fas fa-shopping-bag mr-1"></i>Commandes
+                        </a>
+                        <a href="#" class="text-white hover:text-light transition">
+                            <i class="fas fa-chart-line mr-1"></i>Statistiques
+                        </a>
+                    </div> -->
+                </div>
+                
+                <!-- User Menu -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <!-- Notifications -->
+                    <button class="relative text-white hover:text-[var(--color-light)] transition">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                    </button>
+                    
+                    <!-- Profile Dropdown -->
+                    <div class="relative group">
+                        <button class="flex items-center space-x-2 text-white hover:text-[var(--color-light)] transition">
+                            <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-[var(--color-primary)] font-bold">
+                                {{ user.first_name.0 }}{{ user.last_name.0 }}
+                            </div>
+                            <span>{{ user.get_full_name }}</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 hidden group-hover:block">
+                            <div class="px-4 py-2 border-b border-gray-200">
+                                <p class="text-sm font-semibold text-gray-900">{{ user.boutique.nom }}</p>
+                                <p class="text-xs text-gray-500">{{ user.email }}</p>
+                            </div>
+                            <a href="{% url 'boutique_settings' %}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
+                                <i class="fas fa-cog mr-2 text-[var(--color-primary)]"></i>Paramètres boutique
+                            </a>
+                            <a href="{% url 'profile' %}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
+                                <i class="fas fa-user mr-2 text-[var(--color-primary)]"></i>Mon profil
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
+                                <i class="fas fa-question-circle mr-2 text-[var(--color-primary)]"></i>Aide
+                            </a>
+                            <hr class="my-2">
+                            <a href="{% url 'logout' %}" class="block px-4 py-2 text-red-600 hover:bg-red-50 transition">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden text-white" id="mobile-menu-btn">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-[var(--color-secondary)]" id="mobile-menu">
+            <div class="px-4 py-3 space-y-2">
+                <a href="{# url 'boutique_dashboard' #}" class="block text-white hover:bg-[var(--color-primary)] px-3 py-2 rounded transition">
+                    <i class="fas fa-tachometer-alt mr-2"></i>Tableau de bord
+                </a>
+                <a href="{# url 'boutique_detail' user.boutique.slug #}" class="block text-white hover:bg-[var(--color-primary)] px-3 py-2 rounded transition">
+                    <i class="fas fa-store mr-2"></i>Ma boutique
+                </a>
+                <a href="#" class="block text-white hover:bg-[var(--color-primary)] px-3 py-2 rounded transition">
+                    <i class="fas fa-box mr-2"></i>Produits
+                </a>
+                <a href="#" class="block text-white hover:bg-[var(--color-primary)] px-3 py-2 rounded transition">
+                    <i class="fas fa-shopping-bag mr-2"></i>Commandes
+                </a>
+                <hr class="border-[var(--color-primary)] my-2">
+                <a href="{% url 'logout' %}" class="block text-white hover:bg-red-600 px-3 py-2 rounded transition">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                </a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Messages Flash -->
+    {% if messages %}
+    <div class="fixed top-15 w-full mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        {% for message in messages %}
+        <div class="mb-4 p-4 z-auto rounded-lg flex items-center justify-between {% if message.tags == 'error' %}bg-red-100 text-red-800{% elif message.tags == 'success' %}bg-green-100 text-green-800{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-800{% else %}bg-blue-100 text-blue-800{% endif %}">
+            <div class="flex items-center">
+                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} mr-3 text-xl"></i>
+                <span>{{ message }}</span>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-xl hover:opacity-70">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Main Content -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer Vendeur -->
+    <footer class="bg-[var(--color-dark)] text-white mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Support Vendeurs -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4 text-[var(--color-primary)]">Support Vendeurs</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-[var(--color-primary)] transition">Centre d'aide</a></li>
+                        <li><a href="#" class="hover:text-[var(--color-primary)] transition">Guide du vendeur</a></li>
+                        <li><a href="#" class="hover:text-[var(--color-primary)] transition">Contactez-nous</a></li>
+                        <li><a href="#" class="hover:text-[var(--color-primary)] transition">FAQ Vendeurs</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Ressources -->
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-[var(--color-primary)]">Ressources</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-[var(--color-primary)] transition">Blog vendeurs</a></li>
+                        <li><a href="#" class="hover:text-[var(--color-primary)] transition">Tutoriels</a></li>
+                        <li><a href="#" class="hover:text-[var(--color-primary)] transition">Webinaires</a></li>
+                        <li><a href="#" class="hover:text-[var(--color-primary)] transition">Communauté</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-lg font-bold mb-4 text-[var(--color-primary)]">Contact Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><i class="fas fa-envelope mr-2 text-[var(--color-primary)]"></i>vendeurs@ekomarket.cm</li>
+                        <li><i class="fas fa-phone mr-2 text-[var(--color-primary)]"></i>+237 6XX XXX XXX</li>
+                        <li><i class="fas fa-clock mr-2 text-[var(--color-primary)]"></i>Lun-Ven: 8h-18h</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2026 EkoMarket - Espace Vendeurs. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <script>
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+        
+        // Auto-hide messages
+        setTimeout(function() {
+            const messages = document.querySelectorAll('[class*="bg-red-100"], [class*="bg-green-100"], [class*="bg-yellow-100"], [class*="bg-blue-100"]');
+            messages.forEach(function(msg) {
+                msg.style.transition = 'opacity 0.5s';
+                msg.style.opacity = '0';
+                setTimeout(function() {
+                    msg.remove();
+                }, 500);
+            });
+        }, 5000);
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

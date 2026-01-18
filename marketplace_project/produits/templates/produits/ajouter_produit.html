@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+
+{% block title %}Ajouter un produit- EkoMarket{% endblock %}
+
+{% block extra_css %}{% endblock %}
+
+
+{% block content %}
+
+<div class="container mx-auto my-5 px-4 max-w-4xl">
+    <div class="bg-white rounded-lg shadow-sm p-6 md:p-8">
+        <h2 class="text-2xl font-bold mb-6">Publier un produit</h2>
+
+        <form id="productForm" class="space-y-6" method="POST">
+            {% csrf_token %}
+            <!-- Images du produit -->
+            <div>
+                <label class="block text-sm font-medium mb-2">Photos du produit *</label>
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors cursor-pointer"
+                    id="uploadArea">
+                    <input type="file" id="productImages" multiple accept="image/*" class="hidden">
+                    {{ formset.management_form }}
+                    {% for form in formset %}
+                        <div class="mb-4 hidden">
+                            {{ form.image }}
+                        </div>
+                    {% endfor %}
+                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                    <p class="text-gray-600">Cliquez pour ajouter des photos (maximum 5)</p>
+                    <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG - Taille max: 5MB</p>
+                </div>
+                <div id="imagePreview" class="grid grid-cols-5 gap-2 mt-3"></div>
+            </div>
+
+            <!-- Titre du produit -->
+            <div>
+                <label for="{{ form.titre.id_for_label }}" class="block text-sm font-medium mb-2">{{ form.titre.label }}*</label>
+                {{ form.titre }}
+            </div>
+
+            <!-- Catégorie -->
+            <div>
+                <label for="{{ form.categorie.id_for_label }}" class="block text-sm font-medium mb-2">{{ form.categorie.label }} *</label>
+                <!-- <select id="category" required
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Sélectionnez une catégorie</option>
+                    <option value="telephone">Téléphones</option>
+                    <option value="ordinateur">Ordinateurs</option>
+                    <option value="vetement">Vêtements</option>
+                    <option value="maison">Maison & Jardin</option>
+                    <option value="electronique">Électronique</option>
+                    <option value="vehicule">Véhicules</option>
+                    <option value="autre">Autre</option>
+                </select> -->
+                {{ form.categorie }}
+            </div>
+
+            <div class="md:grid md:grid-cols-2 space-y-5 md:space-x-4">
+                <!-- État -->
+                <div>
+                    <label id="{{ form.etat.id_for_label }}" class="block text-sm font-medium mb-2">{{ form.etat.label }} *</label>
+                    {{ form.etat }}
+                </div>
+                <!-- Prix -->
+                <div>
+                    <label for="{{ form.prix.id_for_label }}" class="block text-sm font-medium mb-2">{{ form.prix.label }} *</label>
+                    {{ form.prix }}
+                </div>
+            </div>
+
+            
+
+            
+            <div class="md:grid md:grid-cols-2 space-y-5 md:space-x-4">
+                <!-- Stock -->
+                <div>
+                    <label for="{{ form.stock.id_for_label }}" class="block text-sm font-medium mb-2">{{ form.stock.label }} *</label>
+                    {{ form.stock }}
+                </div>
+
+                <!-- Poids -->
+                <div>
+                    <label for="{{ form.poids.id_for_label }}" class="block text-sm font-medium mb-2">{{ form.poids.label }}</label>
+                    {{ form.poids }}
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium mb-2">{{ form.description.label }} *</label>
+                {{ form.description }}
+            </div>
+
+            <!-- Boutons -->
+            <div class="flex gap-3 pt-4">
+                <button type="button" onclick="history.back()"
+                    class="px-6 py-3 border rounded-lg hover:bg-gray-100">
+                    Annuler
+                </button>
+                <button type="submit"
+                    class="flex-1 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+                    Publier le produit
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    // Gestion de l'upload d'images
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('productImages');
+    const imagePreview = document.getElementById('imagePreview');
+    let selectedFiles = [];
+
+    uploadArea.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+
+        if (selectedFiles.length + files.length > 5) {
+            alert('Vous ne pouvez ajouter que 5 images maximum');
+            return;
+        }
+
+        selectedFiles = [...selectedFiles, ...files];
+        displayImages();
+    });
+
+    function displayImages() {
+        imagePreview.innerHTML = '';
+        selectedFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const div = document.createElement('div');
+                div.className = 'relative group';
+                div.innerHTML = `
+                    <img src="${e.target.result}" class="w-full h-20 object-cover rounded-lg">
+                    <button type="button" onclick="removeImage(${index})"
+                            class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                `;
+                imagePreview.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function removeImage(index) {
+        selectedFiles.splice(index, 1);
+        displayImages();
+    }
+
+    // Soumission du formulaire
+    document.getElementById('productForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        if (selectedFiles.length === 0) {
+            alert('Veuillez ajouter au moins une photo');
+            return;
+        }
+
+        // const product = {
+        //     title: document.getElementById('productTitle').value,
+        //     category: document.getElementById('category').value,
+        //     price: document.getElementById('price').value,
+        //     condition: document.querySelector('input[name="condition"]:checked').value,
+        //     description: document.getElementById('description').value,
+        //     location: document.getElementById('location').value,
+        //     phone: document.getElementById('phone').value,
+        //     images: selectedFiles.length,
+        //     date: new Date().toISOString()
+        // };
+
+        // console.log('Produit à publier:', product);
+
+        // Animation de succès
+        const form = this;
+        form.classList.add('opacity-50', 'pointer-events-none');
+
+        setTimeout(() => {
+            // alert('Produit publié avec succès!');
+            form.submit();
+            // window.location.href = '{% url "catalogue" %}';
+        }, 1000);
+    });
+</script>
+{% endblock %}
+
+{% block extra_js %}{% endblock %}

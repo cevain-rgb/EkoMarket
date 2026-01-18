@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+
+{% block title %}Créer ma boutique - EkoMarket{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[var(--color-primary)] to-secondary rounded-full mb-4">
+                <i class="fas fa-store text-white text-3xl"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Créez votre boutique</h1>
+            <p class="text-lg text-gray-600">Rejoignez des milliers de vendeurs sur EkoMarket</p>
+        </div>
+        
+        <!-- Progress Steps -->
+        <!-- <div class="mb-8">
+            <div class="flex items-center justify-center">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-[var(--color-primary)] text-white rounded-full flex items-center justify-center font-bold">1</div>
+                        <span class="ml-2 text-[var(--color-primary)] font-semibold">Informations</span>
+                    </div>
+                    <div class="w-16 h-1 bg-gray-300"></div>
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-bold">2</div>
+                        <span class="ml-2 text-gray-600">Catégories</span>
+                    </div>
+                    <div class="w-16 h-1 bg-gray-300"></div>
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-bold">3</div>
+                        <span class="ml-2 text-gray-600">Validation</span>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        
+        <!-- Form Card -->
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+            <form method="POST" enctype="multipart/form-data" id="boutiqueForm">
+                {% csrf_token %}
+                
+                <!-- Section 1: Informations de base -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-info-circle text-[var(--color-primary)] mr-3"></i>
+                        Informations de base
+                    </h2>
+                    
+                    <!-- Nom de la boutique -->
+                    <div class="mb-6">
+                        <label for="id_nom" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-store text-[var(--color-primary)] mr-1"></i>Nom de la boutique *
+                        </label>
+                        {{ form.nom }}
+                        <p class="mt-1 text-xs text-gray-500">Ce nom sera visible par tous les clients</p>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="mb-6">
+                        <label for="id_description" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-align-left text-[var(--color-primary)] mr-1"></i>Description *
+                        </label>
+                        {{ form.description }}
+                        <p class="mt-1 text-xs text-gray-500">Décrivez votre boutique et vos produits</p>
+                    </div>
+                    
+                    <!-- Secteur d'activité -->
+                    <div class="mb-6">
+                        <label for="id_secteur_activite" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-briefcase text-[var(--color-primary)] mr-1"></i>Secteur d'activité *
+                        </label>
+                        {{ form.secteur_activite }}
+                    </div>
+                    
+                    <!-- Logo -->
+                    <div class="mb-6">
+                        <label for="id_logo" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-image text-[var(--color-primary)] mr-1"></i>Logo de la boutique
+                        </label>
+                        <div class="flex items-center space-x-4">
+                            <div class="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
+                                <i class="fas fa-camera text-gray-400 text-2xl" id="logoPreviewIcon"></i>
+                                <img id="logoPreview" class="hidden w-full h-full object-cover rounded-lg">
+                            </div>
+                            <div class="flex-1">
+                                {{ form.logo }}
+                                <p class="mt-1 text-xs text-gray-500">Format: JPG, PNG ou WebP. Max 2MB</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr class="my-8">
+                
+                <!-- Section 2: Catégories -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-tags text-[var(--color-primary)] mr-3"></i>
+                        Catégories de produits
+                    </h2>
+                    
+                    <p class="text-sm text-gray-600 mb-4">Sélectionnez les catégories de produits que vous vendrez (maximum 5)</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for category in form.categories %}
+                        <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg hover:border-[var(--color-primary)] hover:bg-blue-50 cursor-pointer transition">
+                            {{ category.tag }}
+                            <div class="ml-3">
+                                <span class="font-medium text-gray-900">{{ category.choice_label }}</span>
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <hr class="my-8">
+                
+                <!-- Section 3: Coordonnées -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-map-marker-alt text-[var(--color-primary)] mr-3"></i>
+                        Coordonnées
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Adresse -->
+                        <div class="md:col-span-2">
+                            <label for="id_adresse" class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-home text-[var(--color-primary)] mr-1"></i>Adresse complète *
+                            </label>
+                            {{ form.adresse }}
+                        </div>
+                        
+                        <!-- Ville -->
+                        <div>
+                            <label for="id_ville" class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-city text-[var(--color-primary)] mr-1"></i>Ville *
+                            </label>
+                            {{ form.ville }}
+                        </div>
+                        
+                        <!-- Téléphone -->
+                        <div>
+                            <label for="id_telephone" class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-phone text-[var(--color-primary)] mr-1"></i>Téléphone *
+                            </label>
+                            {{ form.telephone }}
+                        </div>
+                        
+                        <!-- Email -->
+                        <div class="md:col-span-2">
+                            <label for="id_email" class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-envelope text-[var(--color-primary)] mr-1"></i>Email de contact *
+                            </label>
+                            {{ form.email }}
+                        </div>
+                    </div>
+                </div>
+                
+                <hr class="my-8">
+                
+                <!-- Section 4: Réseaux sociaux (optionnel) -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-share-alt text-[var(--color-primary)] mr-3"></i>
+                        Réseaux sociaux <span class="text-sm font-normal text-gray-500 ml-2">(optionnel)</span>
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Site web -->
+                        <div>
+                            <label for="id_site_web" class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-globe text-[var(--color-primary)] mr-1"></i>Site web
+                            </label>
+                            {{ form.site_web }}
+                        </div>
+                        
+                        <!-- Facebook -->
+                        <div>
+                            <label for="id_facebook" class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fab fa-facebook text-[var(--color-primary)] mr-1"></i>Facebook
+                            </label>
+                            {{ form.facebook }}
+                        </div>
+                        
+                        <!-- Instagram -->
+                        <div>
+                            <label for="id_instagram" class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fab fa-instagram text-[var(--color-primary)] mr-1"></i>Instagram
+                            </label>
+                            {{ form.instagram }}
+                        </div>
+                    </div>
+                </div>
+                
+                <hr class="my-8">
+                
+                <!-- Conditions générales -->
+                <div class="mb-8">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                {{ form.accepte_conditions }}
+                            </div>
+                            <div class="ml-3">
+                                <label for="id_accepte_conditions" class="text-sm text-gray-700">
+                                    J'accepte les <a href="#" class="text-[var(--color-primary)] font-semibold hover:underline">conditions générales de vente</a> 
+                                    et la <a href="#" class="text-[var(--color-primary)] font-semibold hover:underline">politique de la marketplace</a>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Boutons d'action -->
+                <div class="flex items-center justify-between">
+                    <a href="{# url 'user_dashboard' #}" class="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-semibold">
+                        <i class="fas fa-arrow-left mr-2"></i>Annuler
+                    </a>
+                    <button type="submit" class="px-8 py-3 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-[var(--color-light)] rounded-lg hover:shadow-lg transition font-semibold">
+                        <i class="fas fa-check mr-2"></i>Créer ma boutique
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Info Box -->
+        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">
+                <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>Conseils pour réussir
+            </h3>
+            <ul class="space-y-3 text-sm text-gray-600">
+                <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                    <span>Choisissez un nom de boutique unique et facile à retenir</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                    <span>Rédigez une description détaillée pour attirer plus de clients</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                    <span>Ajoutez un logo professionnel pour renforcer votre image</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                    <span>Votre boutique sera validée par notre équipe sous 24-48h</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Preview du logo
+    document.getElementById('id_logo').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('logoPreview');
+                const icon = document.getElementById('logoPreviewIcon');
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                icon.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+        // Compteur de catégories sélectionnées
+        const categoryCheckboxes = document.querySelectorAll('input[name="categories"]');
+        categoryCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const checked = document.querySelectorAll('input[name="categories"]:checked').length;
+                if (checked > 5) {
+                    this.checked = false;
+                    alert('Vous ne pouvez sélectionner que 5 catégories maximum.');
+                }
+            });
+        });
+</script>
+{% endblock %}
