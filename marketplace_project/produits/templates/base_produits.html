@@ -51,7 +51,7 @@
                     <a href="/" class="flex items-center space-x-2">
                         <i class="fas fa-store text-white text-2xl"></i>
                         <span class="text-2xl font-bold text-[var(--color-light)]">EkoMarket</span>
-                        <span class="text-xs bg-white text-[var(--color-primary)] px-2 py-1 rounded-full font-semibold">VENDEUR</span>
+                        <!-- <span class="text-xs bg-white text-[var(--color-primary)] px-2 py-1 rounded-full font-semibold">VENDEUR</span> -->
                     </a>
                     
                     <!-- Navigation Links -->
@@ -76,11 +76,20 @@
                 
                 <!-- User Menu -->
                 <div class="hidden md:flex items-center space-x-4">
-                    <!-- Notifications -->
-                    <button class="relative text-white hover:text-[var(--color-light)] transition">
-                        <i class="fas fa-bell text-xl"></i>
-                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
-                    </button>
+                    <div class="flex items-center gap-4">
+                        <!-- Notifications -->
+                        <a href="{% url 'catalogue' %}" class="relative text-white hover:text-blue-600">
+                            <i class="fas fa-home text-xl"></i>
+                        </a>
+                        <a href="#" class="relative text-white hover:text-[var(--color-primary)] transition">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                        </a>
+                        <a href="{% url 'panier' %}" class="relative text-white hover:text-blue-600 relative">
+                            <i class="fas fa-shopping-cart text-xl"></i>
+                            <span id="cartBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">{{ articles_panier|length }}</span>
+                        </a>
+                    </div>
                     
                     <!-- Profile Dropdown -->
                     <div class="relative group">
@@ -98,19 +107,36 @@
                                 <p class="text-sm font-semibold text-gray-900">{{ user.boutique.nom }}</p>
                                 <p class="text-xs text-gray-500">{{ user.email }}</p>
                             </div>
-                            <a href="{% url 'boutique_settings' %}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
-                                <i class="fas fa-cog mr-2 text-[var(--color-primary)]"></i>Paramètres boutique
-                            </a>
+                            {% if user.est_vendeur %}
+                                {% if user.boutique %}
+                                <a href="{% url 'boutique_detail' user.boutique.slug %}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
+                                    <i class="fas fa-store mr-2 text-[var(--color-primary)]"></i>Ma boutique
+                                </a>
+                                {% else %}
+                                <a href="{% url 'create_boutique' %}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
+                                    <i class="fas fa-store mr-2 text-[var(--color-primary)]"></i>Créer ma boutique
+                                </a>
+                                {% endif %}
+                            {% endif %}
                             <a href="{% url 'profile' %}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
                                 <i class="fas fa-user mr-2 text-[var(--color-primary)]"></i>Mon profil
                             </a>
-                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
+                            <a href="{% url 'panier' %}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
+                                <i class="fas fa-shopping-cart mr-2 text-[var(--color-primary)]"></i>Panier
+                            </a>
+                            <a href="" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 transition">
                                 <i class="fas fa-question-circle mr-2 text-[var(--color-primary)]"></i>Aide
                             </a>
                             <hr class="my-2">
+                            {% if user.is_authenticated %}
                             <a href="{% url 'logout' %}" class="block px-4 py-2 text-red-600 hover:bg-red-50 transition">
                                 <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
                             </a>
+                            {% else %}
+                            <a href="{% url 'logout' %}" class="block px-4 py-2 text-white hover:bg-red-50 transition">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Connexion
+                            </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -125,23 +151,42 @@
         <!-- Mobile Menu -->
         <div class="md:hidden hidden bg-[var(--color-secondary)]" id="mobile-menu">
             <div class="px-4 py-3 space-y-2">
+                {% if user.est_vendeur %}
                 <a href="{% url 'boutique_dashboard' %}" class="block text-white hover:bg-[var(--color-primary)] px-3 py-2 rounded transition">
                     <i class="fas fa-tachometer-alt mr-2"></i>Tableau de bord
                 </a>
-
+                    {% if user.boutique %}
+                    <a href="{% url 'boutique_detail' user.boutique.slug %}" class="block text-white hover:bg-[var(--color-primary)] px-3 py-2 rounded transition">
+                        <i class="fas fa-store mr-2"></i>Ma boutique
+                    </a>
+                    {% else %}
+                    <a href="{% url 'create_boutique' %}" class="block text-white hover:bg-[var(--color-primary)] px-3 py-2 rounded transition">
+                        <i class="fas fa-store mr-2"></i>Créer ma boutique
+                    </a>
+                    {% endif %}
+                {% endif %}
                 <a href="{% url 'catalogue' %}" class="block text-white hover:bg-[var(--color-primary)] px-3 py-2 rounded transition">
                     <i class="fas fa-box mr-2"></i>Produits
                 </a>
                 <a href="{% url 'panier' %}" class="block text-white hover:bg-[var(--color-primary)] px-3 py-2 rounded transition">
-                    <i class="fas fa-box mr-2"></i>Panier
+                    <i class="fas fa-cart-plus mr-2"></i>Panier
                 </a>
-                <a href="#" class="block text-white hover:bg-[var(--color-primary)] px-3 py-2 rounded transition">
-                    <i class="fas fa-shopping-bag mr-2"></i>Commandes
+                <a href="{# commande #}" class="block text-white hover:bg-[var(--color-primary)] px-3 py-2 rounded transition">
+                    <i class="fas fa-shopping-bag mr-2"></i>Commande
+                </a>
+                <a href="{% url 'profile' %}" class="block text-white hover:bg-[var(--color-primary)] px-3 py-2 rounded transition">
+                    <i class="fas fa-sign mr-2"></i>Profile
                 </a>
                 <hr class="border-[var(--color-primary)] my-2">
+                {% if user.is_authenticated %}
                 <a href="{% url 'logout' %}" class="block text-white hover:bg-red-600 px-3 py-2 rounded transition">
                     <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
                 </a>
+                {% else %}
+                <a href="{% url 'logout' %}" class="block text-white hover:bg-white px-3 py-2 rounded transition">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Connexion
+                </a>
+                {% endif %}
             </div>
         </div>
     </nav>

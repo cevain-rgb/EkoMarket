@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_produits.html' %}
 {% block title %} Produits - EkoMarket {% endblock %}
 {% block content %}
 <div class="container mx-auto px-4 py-8">
@@ -28,6 +28,10 @@
     
         <!-- Produits -->
         <section class="py-12 bg-gray-100 md:rounded-lg lg:col-span-3">
+            <a href="{% url 'boutiques_list' %}" class="fixed top-20 right-5 bg-[var(--color-primary)] text-white px-4 py-1 rounded">
+                <i class="fa fa-list" aria-hidden="true"></i>
+                Voir les boutiques
+            </a>
             <div class="container mx-auto px-4">
                 <!-- <h3 class="text-2xl font-bold mb-6">Produits tendances</h3> -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -36,7 +40,7 @@
                     <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                         <div class="h-48 bg-gray-200 flex items-center justify-center">
                         {% if produit.image_principale %}
-                        <img src="{{ produit.image_principale.url }}" alt="{{ produit.nom }}" class="w-full h-48 object-cover mb-4">
+                        <img src="{{ MEDIA }}{{ produit.image_principale.url }}" alt="{{ produit.nom }}" class="w-full h-48 object-cover mb-4">
                         {% else %}
                         <i class="fas fa-image text-4xl text-gray-400"></i>
                         {% endif %}
@@ -51,7 +55,7 @@
                             {% if not produit.id in panier %}
                             <button onclick="ajouterAuPanier('{{ produit.id }}')" class="bg-gray-50 hover:bg-gray-200 rounded-full px-2 py-1 rounded mt-2 cursor-pointer"><i class="fas fa-cart-plus text-[var(--color-primary)] "></i></button>
                             {% endif %}
-                            <!-- {{ produit.id }} -->
+                            <!-- {{ panier|length }} articles dans le panier -->
                         </div>
                     </div>
                     {% endfor %}
@@ -67,7 +71,7 @@
 
 <script>
 function ajouterAuPanier(produitId) {
-    fetch('/produits/ajouter-au-panier/', {
+    fetch('/panier/ajouter-au-panier/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',

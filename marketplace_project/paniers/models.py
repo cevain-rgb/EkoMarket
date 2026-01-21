@@ -14,8 +14,8 @@ class Panier(models.Model):
 class ArticlePanier(models.Model):
     panier = models.ForeignKey(Panier, on_delete=models.CASCADE)
     produit = models.ForeignKey(Produit, on_delete=models.CASCADE)
-    quantite = models.IntegerField()
-    prix = models.DecimalField(max_digits=10, decimal_places=2)
+    quantite = models.IntegerField(default=1)
+    prix = models.DecimalField(null=True ,max_digits=10, decimal_places=2)
 
     def __str__(self):
         return f'{self.produit.titre} x {self.quantite}'

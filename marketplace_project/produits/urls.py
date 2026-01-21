@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     # url vers le catalogue (page d'accueil)
@@ -11,4 +13,4 @@ urlpatterns = [
     
     # url panier
     path('ajouter-au-panier/', views.ajouter_au_panier, name='ajouter_au_panier'),
-]
+] + static(settings.MEDIA, document_root=settings.MEDIA_ROOT)

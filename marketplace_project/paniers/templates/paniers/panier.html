@@ -1,13 +1,189 @@
-<h1>Panier</h1>
+{% extends 'base_panier.html' %}
+{% block title %}Mon Panier - EkoMarket{% endblock %}
+{% block content %}
+<div class="container mx-auto px-4">
+    <h2 class="text-2xl font-bold mb-6">Mon Panier</h2>
 
-{% if articles_panier %}
-    <ul>
-    {% for article_panier in articles_panier %}
-        <li>{{ article_panier.produit.titre }} x {{ article_panier.quantite }} - {{ article_panier.prix }} * {{ article_panier.quantite }} FCFA</li>
-    {% endfor %}
-    </ul>
-    <p>Total : {{ total }} FCFA</p>
-    <a href="{% url 'vider_panier' %}">Vider le panier</a>
-{% else %}
-    <p>Le panier est vide.</p>
-{% endif %}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-4" id="cartItems">
+            {% if articles_panier %}
+                {% for article_panier in articles_panier %}
+                <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="w-full md:w-32 h-32 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-image text-3xl text-gray-400"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-lg mb-2">{{ article_panier.produit.titre }}</h4>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-sm text-gray-600">Quantité:</span>
+                                <span class="font-bold text-lg">{{ article_panier.quantite }}</span>
+                            </div>
+                            <div class="text-xl font-bold text-blue-600 mb-3">
+                                {% widthratio article_panier.produit.prix 1 article_panier.quantite %} FCFA
+                            </div>
+                            <div class="flex gap-3">
+                                <button class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                                    onclick="openEditModal('{{ article_panier.id }}', '{{ article_panier.produit.titre }}', '{{ article_panier.produit.prix }}', '{{ article_panier.quantite }}')">
+                                    <i class="fas fa-edit mr-2"></i>Modifier
+                                </button>
+                                <!-- <a href="{% url 'modifier_panier' article_panier.id %}" 
+                                    class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-center">
+                                     <i class="fas fa-edit mr-2"></i>Modifier
+                                </a> -->
+                                <a href="{% url 'supprimer_du_panier' article_panier.id %}" 
+                                    class="flex-1 py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium text-center">
+                                    <i class="fas fa-trash mr-2"></i>Supprimer
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-lg shadow-sm p-6 sticky top-4">
+                <h3 class="text-xl font-bold mb-4">Résumé</h3>
+                <div class="space-y-3 mb-4">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Sous-total ({{ articles_panier|length }} articles)</span>
+                        <span class="font-medium">{{ total }} FCFA</span>
+                    </div>
+                    <div class="border-t pt-3 flex justify-between text-lg font-bold">
+                        <span>Total</span>
+                        <span class="text-blue-600">{{ total }} FCFA</span>
+                    </div>
+                </div>
+                <a href="#" class="w-full block py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-center mb-3">
+                    Commander
+                </a>
+                <a href="{% url 'catalogue' %}" class="w-full block py-3 border rounded-lg hover:bg-gray-100 text-center">
+                    Continuer mes achats
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if not articles_panier %}
+    <div class="text-center py-12">
+        <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
+        <h3 class="text-xl font-bold mb-2">Votre panier est vide</h3>
+        <p class="text-gray-600 mb-4">Découvrez nos produits et ajoutez-les à votre panier</p>
+        <a href="{% url 'catalogue' %}" class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            Voir les produits
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block tag_js%}
+<script>
+function openEditModal(articleId, titre, prix, quantite) {
+    const modal = document.createElement('div');
+    modal.id = 'editModal';
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Modifier le produit</h3>
+                <button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div id="editProductInfo" class="mb-4 p-3 bg-gray-50 rounded-lg">
+                <h4 class="font-bold mb-1">${titre}</h4>
+                <p class="text-sm text-gray-600">Prix unitaire: ${parseInt(prix).toLocaleString()} FCFA</p>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Quantité</label>
+                <div class="flex items-center justify-center gap-4">
+                    <button onclick="decrementQuantity()" 
+                            class="w-12 h-12 border-2 rounded-lg hover:bg-gray-100 font-bold text-xl">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <input type="number" id="editQuantity" value="${quantite}" min="1" 
+                           class="w-24 text-center text-xl font-bold px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button onclick="incrementQuantity()" 
+                            class="w-12 h-12 border-2 rounded-lg hover:bg-gray-100 font-bold text-xl">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeEditModal()" 
+                        class="flex-1 py-3 border-2 rounded-lg hover:bg-gray-100 font-medium">
+                    Annuler
+                </button>
+                <button onclick="saveEdit(${articleId})" 
+                        class="flex-1 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+                    Enregistrer
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function closeEditModal() {
+    const modal = document.getElementById('editModal');
+    if (modal) modal.remove();
+}
+
+function incrementQuantity() {
+    const input = document.getElementById('editQuantity');
+    input.value = parseInt(input.value) + 1;
+}
+
+function decrementQuantity() {
+    const input = document.getElementById('editQuantity');
+    if (parseInt(input.value) > 1) {
+        input.value = parseInt(input.value) - 1;
+    }
+}
+
+function saveEdit(articleId) {
+    const newQuantite = document.getElementById('editQuantity').value;
+    fetch(`/panier/modifier-panier/${articleId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ quantite: newQuantite })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // alert('salut')
+            closeEditModal();
+            showToast(data.message, 'blue');
+            location.reload();
+        } else {
+            showToast(data.message, 'red');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showToast('Erreur lors de la modification', 'red');
+    });
+}
+
+function showToast(message, color) {
+    const toast = document.createElement('div');
+    toast.className = `fixed top-4 right-4 bg-${color}-600 text-white px-6 py-3 rounded-lg shadow-lg z-50`;
+    toast.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+}
+
+function updateQuantite(articleId, newQuantite) {
+    window.location.href = `/panier/modifier/${articleId}/?quantite=${newQuantite}`;
+}
+</script>
+{% endblock %}

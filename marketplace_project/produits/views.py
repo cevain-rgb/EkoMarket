@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.db.models import Q
 from django.contrib import messages
 from .models import *
+from paniers.models import *
 
 # Create your views here.
 # def add_produit_view(request):
@@ -44,7 +45,11 @@ def catalogue_view(request):
     else:
         produits = produits.order_by('nom')
     
-    panier = request.session.get('panier', {}), 
+    # if request.user.is_authenticated:
+    # panier = Panier.objects.get(utilisateur=request.user)
+    # article_panier = ArticlePanier.objects.filter(panier=panier)
+    # else:
+        # panier = request.session.get('panier', {}), 
     context = {
         'produits': produits,
         'filtres': {
@@ -53,7 +58,7 @@ def catalogue_view(request):
             'prix_min': prix_min,
             'prix_max': prix_max,
             'tri': tri,
-            'panier': panier,
+            # 'panier': article_panier,
         }
     }
     return render(request, 'produits/catalogue.html', context)
@@ -66,7 +71,7 @@ from .models import Produit
 @require_POST
 def ajouter_au_panier(request):
     """
-    Ajouter un produit au panier (session)
+    Ajouter un produit au panier (session) de l'utilisateur connecté.
     """
     produit_id = request.POST.get('produit_id')
     quantite = int(request.POST.get('quantite', 1))
@@ -86,7 +91,7 @@ def ajouter_au_panier(request):
                 'quantite': quantite,
                 'image': produit.image_principale.url if produit.image_principale else None,
             }
-        request.session['panier'] = panier
+            request.session['panier'] = panier
         return JsonResponse({'success': True, 'message': 'Produit ajouté au panier'})
     except Produit.DoesNotExist:
         return JsonResponse({'success': False, 'message': 'Produit introuvable'})
@@ -100,6 +105,7 @@ from .models import Produit
 @login_required
 def ajouter_produit(request):
     if request.method == 'POST':
+        print('heo')
         form = ProduitForm(request.POST)
         formset = ImageProduitFormSet(request.POST, request.FILES)
         if form.is_valid() and formset.is_valid():
