@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'users',
     'boutiques',
     'produits',
+    'paniers',
+    'commandes',
 ]
 # Modeles utilisateur persinalise
 AUTH_USER_MODEL = 'users.Utilisateur'

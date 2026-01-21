@@ -31,4 +31,7 @@ urlpatterns = [
     # url de l'app produits
     path('produits/', include('produits.urls')),
     
+    # url de l'app paniers
+    path('panier/', include('paniers.urls')),
+    
 ]

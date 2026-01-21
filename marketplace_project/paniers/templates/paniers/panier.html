@@ -1,0 +1,13 @@
+<h1>Panier</h1>
+
+{% if articles_panier %}
+    <ul>
+    {% for article_panier in articles_panier %}
+        <li>{{ article_panier.produit.titre }} x {{ article_panier.quantite }} - {{ article_panier.prix }} * {{ article_panier.quantite }} FCFA</li>
+    {% endfor %}
+    </ul>
+    <p>Total : {{ total }} FCFA</p>
+    <a href="{% url 'vider_panier' %}">Vider le panier</a>
+{% else %}
+    <p>Le panier est vide.</p>
+{% endif %}
