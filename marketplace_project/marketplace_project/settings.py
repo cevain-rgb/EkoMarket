@@ -133,22 +133,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # configuration email (pour l'envoie des otp)
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'cevainnji4@gmail.com'
-# EMAIL_HOST_PASSWORD = '#c#e#v#ainnji4@gmail.com'
-# DEFAULT_FROM_EMAIL = 'EkoMarket'
-
-# Affiche les email en console
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-#  configuration des sessions
-# SESSION_COOKIE_AGE = 120960 # SOIT 2 SEMAINES
-# SESSION_SAVE_EVERY_REQUEST = False
-# SESSION_COOKIE_SECURE = True 
-# SESSION_COOKIE_HTTPONLY = True
 
 # Gestion des medias (avatar, logo, ...)
 MEDIA = '/media/'
